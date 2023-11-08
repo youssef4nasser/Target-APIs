@@ -1,0 +1,4 @@
+########## Day number 1 ##########
+- folder structer - (Youssef)
+- globalError - (Youssef)
+- connectionDB - (Youssef)
