@@ -8,15 +8,13 @@ const app =  express()
 
 // middleware to parse the body of request into json format
 app.use(express.json())
-
+// middleware for cross-origin resource sharing (CORS)
 app.use(cors())
-
 // load environment variables
 dotenv.config()
-
 // connection to database
 connectionBD()
-
+// bootstrap application
 bootstrap(app)
 
 const port = process.env.PORT || 5000

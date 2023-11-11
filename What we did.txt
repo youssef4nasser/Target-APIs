@@ -2,3 +2,11 @@
 - folder structer - (Youssef)
 - globalError - (Youssef)
 - connectionDB - (Youssef)
+- authoriztion - (Youssef)
+- authentication - (Youssef)
+Notes:
+- check token after change password in authentication
+########## Day number 2 ##########
+- Fun validate schema Joi in middleware
+- build database schema models
+
