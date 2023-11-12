@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 
- export  async function sendEmail({email,html}){
+ export  async function sendEmail(email,subject,html){
 
     const transporter = nodemailer.createTransport({
         service:"gmail",
@@ -15,9 +15,9 @@ import nodemailer from "nodemailer";
          }
        });
        const info = await transporter.sendMail({
-         from: `"For Me 👻" <${process.env.EMAIL}>`, // sender address
+         from: `"Project_Team 👻" <${process.env.EMAIL}>`, // sender address
          to:email,
-         subject:"confirmEmail",
+         subject,
          html,
        });
        return info.rejected.length? false: true
