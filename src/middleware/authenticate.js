@@ -5,10 +5,18 @@ import { catchError } from "../utils/catchError.js"
 export const authenticate = catchError(
     async (req, res, next)=>{
         const {token} = req.headers
-        // check fi token not provide
+        // validate headers 
+        // ...........
+        
+        // check fi token not provide ()
         if(!token) return next(new AppError("Token is required", 401))
-        // verify the token
-        const decoded = Jwt.verify(token, process.env.JWT_SEC)
+        // cheack Bareer_token
+    if(!token?.startsWith(process.env.BARER_TOKEN)) return next(new AppError('Invalid token', 403))
+       
+    
+    // verify the token without Bareer_token
+    const originToken= token?.split(process.env.BARER_TOKEN)[1]
+        const decoded = Jwt.verify(originToken, process.env.JWT_SEC)
         if(!decoded?.id){
             return next(new AppError('Invalid token', 403))
         }
