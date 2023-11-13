@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import slugify from "slugify";
 
 const brandSchema = new Schema({
     name: {
@@ -19,5 +20,15 @@ const brandSchema = new Schema({
 },{
     timestamps: true
 })
+
+// slug name when ceate new brand
+brandSchema.pre('save', function(){
+    this.slug = slugify(this.name)
+})
+
+// slug name when updating brand
+brandSchema.pre('findOneAndUpdate', function() {
+    this._update.slug = slugify(this._update.name)
+});
 
 export const brandModel = model('Brand', brandSchema)

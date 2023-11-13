@@ -1,4 +1,5 @@
 import { Schema,model } from "mongoose";
+import slugify from "slugify";
 
 const categorySchema = new Schema({
     name: {
@@ -12,11 +13,22 @@ const categorySchema = new Schema({
         type :String,
         lowercase: true,
     },
-    image: {
-        type: String,
+    image:{
+        secure_url: String,
+        public_id: String
     }
 },{
     timestamps: true
 })
+
+// slug name when create
+categorySchema.pre('save', function(){
+    this.slug = slugify(this.name)
+})
+
+// slug name when updating
+categorySchema.pre('findOneAndUpdate', function() {
+    this._update.slug = slugify(this._update.name)
+});
 
 export const categoryModel = model('Category', categorySchema)

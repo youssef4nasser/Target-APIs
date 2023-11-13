@@ -1,7 +1,7 @@
 
 export const validate = (schema)=>{
     return (req, res, next)=>{
-        const inputs = {...req.params, ...req.boody, ...req.query}
+        const inputs = {...req.params, ...req.body, ...req.query}
         
         if (req.file || req.files) {
             inputs.file = req.file || req.files
@@ -13,7 +13,7 @@ export const validate = (schema)=>{
             error.details.forEach(element => {
                 errors.push({message: element.message, field: element.path[0]})
             });
-            return res.json({message: 'Invalid request data', errors})
+            return res.status(400).json({message: 'Invalid request data', errors})
         }
         next()
     }

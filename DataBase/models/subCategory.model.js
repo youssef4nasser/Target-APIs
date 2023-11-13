@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose"
+import slugify from "slugify";
 
 const subCategorySchema = new Schema({
     name: {
@@ -12,8 +13,9 @@ const subCategorySchema = new Schema({
         type :String,
         lowercase: true,
     },
-    imgCover:{
-        type: String,
+    image:{
+        secure_url: String,
+        public_id: String
     },
     category:{
         type: Schema.ObjectId,
@@ -23,5 +25,15 @@ const subCategorySchema = new Schema({
 },{
     timestamps: true
 })
+
+// slug name when create
+subCategorySchema.pre('save', function(){
+    this.slug = slugify(this.name)
+})
+
+// slug name when updating
+subCategorySchema.pre('findOneAndUpdate', function() {
+    this._update.slug = slugify(this._update.name)
+});
 
 export const subCategoryModel = model('SubCategory', subCategorySchema)
