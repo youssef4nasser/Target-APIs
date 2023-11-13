@@ -16,10 +16,10 @@ const couponSchema = new Schema({
         required: true,
         min: 0,
     },
-    usedBy: {
+    usedBy: [{
         type: Schema.ObjectId,
         ref: 'User'
-    }
+    }]
 },{
     timestamps: true
 })

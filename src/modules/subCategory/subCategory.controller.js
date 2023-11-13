@@ -25,7 +25,11 @@ export const addSubCategory = catchError(
 
 export const getAllSubCategories = catchError(
     async (req, res, next)=>{
-        const subCategory =  await subCategoryModel.find({})
+        let filter = {}
+        if(req.params.categoryId){
+            filter = {category: req.params.categoryId}
+        }
+        const subCategory =  await subCategoryModel.find(filter)
         return res.status(200).json({message: "Success", subCategory})
     }
 )

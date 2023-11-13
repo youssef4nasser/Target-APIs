@@ -7,13 +7,13 @@ const userSchema = new Schema({
         type : String,
         required: true,
         trim: true,
-        // maxlength: [25, "Name should be less than 25 characters"],
+        maxlength: [25, "Name should be less than 25 characters"],
     },
     lastName: {
         type : String,
         required: true,
         trim: true,
-        // maxlength: [25, "Name should be less than 25 characters"],
+        maxlength: [25, "Name should be less than 25 characters"],
     },
     email: {
         type:String,
@@ -23,9 +23,8 @@ const userSchema = new Schema({
     },
     password:{
         type:String,
-        // minlength:[6, 'Password must have atleast 6 character'],
+        minlength:[6, 'Password must have atleast 6 character'],
         required: true,
-
     },
     role:{
         type: String,
@@ -46,7 +45,6 @@ const userSchema = new Schema({
     },
     codeForgetPassword:{
         type: String,
-
     },
     blocked: {
         type: Boolean,
