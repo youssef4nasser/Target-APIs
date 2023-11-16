@@ -33,7 +33,9 @@ subCategorySchema.pre('save', function(){
 
 // slug name when updating
 subCategorySchema.pre('findOneAndUpdate', function() {
-    this._update.slug = slugify(this._update.name)
+    if(this._update.name){
+        this._update.slug = slugify(this._update.name);
+    }
 });
 
 export const subCategoryModel = model('SubCategory', subCategorySchema)

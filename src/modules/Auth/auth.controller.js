@@ -43,13 +43,11 @@ sendEmail(email,
 
 // ------------
 const hashPass= bcrypt.hashSync(password, +process.env.Hash_Round);
-
  await userModel.create({
     firstName,
     lastName,
     email,
     password:hashPass 
-  
 })
 
 

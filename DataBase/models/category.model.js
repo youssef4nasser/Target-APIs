@@ -28,7 +28,9 @@ categorySchema.pre('save', function(){
 
 // slug name when updating
 categorySchema.pre('findOneAndUpdate', function() {
-    this._update.slug = slugify(this._update.name)
+    if(this._update.name){
+        this._update.slug = slugify(this._update.name);
+    }
 });
 
 export const categoryModel = model('Category', categorySchema)

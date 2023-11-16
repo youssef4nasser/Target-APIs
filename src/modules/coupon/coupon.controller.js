@@ -4,13 +4,13 @@ import { catchError } from "../../utils/catchError.js";
 
 export const addCoupon = catchError(
     async (req, res, next)=>{
+        // check date 
+        if(req.body.expire < Date.now().toString()){
+            return next(new AppError('Expiration Date must be greater than current date', 403));
+        }
         // check if coupon already exist or no
         const isExist = await couponModel.findOne({code: req.body.code})
         if(isExist) return next(new AppError("This Coupon already exist", 409))
-        // check date
-        if(req.body.expire < date.now()){
-           return next(new AppError('Expiration Date must be greater than current date', 403));
-        }
         // create new coupon and save on DB
         const coupon = new couponModel(req.body)
         await coupon.save()

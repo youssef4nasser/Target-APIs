@@ -1,4 +1,6 @@
 import { Schema,model } from "mongoose";
+import slugify from "slugify";
+
 const productSchema = new Schema({
     name: {
         type : String,
@@ -18,7 +20,6 @@ const productSchema = new Schema({
     },
     description: {
         type : String,
-        maxlength: [250, "description should be less than 250 characters"],
         minlength:[3, "description should be more than 3 characters"],
         required: true,
         trim: true,
@@ -57,19 +58,20 @@ const productSchema = new Schema({
         type: Number,
         min: 0
     },
-    image:{
-        type: String,
+    image: {
+        type: Object,
+        required: true
     },
     images: {
-        type: [String],
+        type: [Object],
     },
     colors: {
-        type: [String],
+        type: Array,
     },
     sizes: {
-        type: [String],
+        type: Array,
     },
-    priceAfterDiscount: {
+    discount: {
         type: Number,
         default:0,
         min: 0
@@ -77,5 +79,17 @@ const productSchema = new Schema({
 },{
     timestamps: true,
 })
+
+// slug name when ceate 
+productSchema.pre('save', function(){
+    this.slug = slugify(this.name)
+})
+
+// slug name when updating
+productSchema.pre('findOneAndUpdate', function() {
+    if(this._update.name){
+        this._update.slug = slugify(this._update.name);
+    }
+});
 
 export const productModel = model('Product', productSchema)

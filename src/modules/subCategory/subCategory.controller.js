@@ -50,9 +50,12 @@ export const updateSubCategory = catchError(
         let subCategory = await subCategoryModel.findById(id)
         // check this subCategory found or no
         !subCategory && next(new AppError("Not found this SubCategory", 409))
-        // Check if the Category exists
-        const categoryId = await categoryModel.findById(req.body.category)
-        if(!categoryId) return next(new AppError('The Category does not exist', 404));
+        // if update category id
+        if(req.body.category){
+            // Check if the Category exists
+            const categoryId = await categoryModel.findById(req.body.category)
+            if(!categoryId) return next(new AppError('The Category does not exist', 404));
+        }
         // update name
         if(req.body.name){
             // check if subCategory name already exist
