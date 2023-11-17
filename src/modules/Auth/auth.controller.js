@@ -61,16 +61,16 @@ const hashPass= bcrypt.hashSync(password, +process.env.Hash_Round);
 export const SignIn= catchError(async(req,res,next)=>{
     const {email,password}= req.body  
     const userExist= await userModel.findOne({email})
-    if(!userExist) return new AppError("incorrect email or password... ",409);
-    if(!userExist.isVerified) return new AppError("PLZ confirm email... ",409);
-    if(!bcrypt.compareSync(password, userExist.password)) return new AppError("incorrect email or password... ",409);
+    if(!userExist || !bcrypt.compareSync(password, userExist.password)) return new AppError("incorrect email or password... ",409);
+    if(!userExist.isVerified) return new AppError("please confirm your email first",409);
+
     const accses_token= Jwt.sign({
         email,
         id:userExist._id,
-        firstName:userExist.firstName}
-        ,process.env.Access_TOKEN_Signture,
-       { expiresIn:30*60}
-       );
+        firstName:userExist.firstName},
+        process.env.Access_TOKEN_Signture,
+        {expiresIn:30*60});
+       
     const ref_token=  Jwt.sign({
         email,
         id:userExist._id,
@@ -83,19 +83,12 @@ export const SignIn= catchError(async(req,res,next)=>{
     
      res.status(200).json({message:" Done...",token:accses_token,ref_token})
     
-    })
-
-
-
-
-
-
-
-
+})
 
 
 
 //  ******************************* Confirm By code ***************************
+
 // export const confirm_Code= catchError(async(req,res,next)=>{
    
 //     const {email, code}= req.body 
@@ -122,8 +115,9 @@ export const SignIn= catchError(async(req,res,next)=>{
     
 //     })
 
+//  ******************************* Confirm By link ***************************
 
-    //  ******************************* Confirm By link ***************************
+
 export const confirm_Link= catchError(async(req,res,next)=>{
    
     const{ token }= req.params 
@@ -142,7 +136,7 @@ if(!decoded) return new AppError("invalid token verfiy ",409);
     res.status(200).json({message:"email confiermed PLZ login",user}):
      next(new AppError('user not found or already confiermed', 409 ) ) 
     
-    })
+})
 
 
 //  *******************************forget Password ***************************
@@ -180,28 +174,28 @@ sendEmail(email,
 
 })
 
-    //  ******************************* resetPassword ***************************
-    export const resetPassword= catchError(async(req,res,next)=>{
-   
-        const{ token }= req.params 
-      const{newPassword}= req.body
-        if(!token) return new AppError("invalid token ",409);
-    const decoded = Jwt.verify(token,process.env.Token_forgetPassSignture)
-    if(!decoded) return new AppError("invalid token verfiy ",409);
-    const existUser= await userModel.findOne({email:decoded?.email})
-    if(!existUser) return new AppError("user not found ",409);
-     if(decoded.code != existUser.codeForgetPassword) return new AppError("invalid token ",409);
+//  ******************************* resetPassword ***************************
+export const resetPassword= catchError(async(req,res,next)=>{
+
+    const{ token }= req.params 
+    const{newPassword}= req.body
+    if(!token) return new AppError("invalid token ",409);
+const decoded = Jwt.verify(token,process.env.Token_forgetPassSignture)
+if(!decoded) return new AppError("invalid token verfiy ",409);
+const existUser= await userModel.findOne({email:decoded?.email})
+if(!existUser) return new AppError("user not found ",409);
+    if(decoded.code != existUser.codeForgetPassword) return new AppError("invalid token ",409);
 
 const hashPass= bcrypt.hashSync(newPassword,6);
 
-       const user=   await userModel.findOneAndUpdate(
-            {email:decoded?.email,codeForgetPassword:decoded?.code},
-            {password:hashPass},
-            {new:true}
-         )
+    const user=   await userModel.findOneAndUpdate(
+        {email:decoded?.email,codeForgetPassword:decoded?.code},
+        {password:hashPass},
+        {new:true}
+        )
 
-         user? 
-        res.status(200).json({message:"Done New Password",existUser}):
-         next(new AppError('user not found ', 409 ) ) 
-        
-        })
+        user? 
+    res.status(200).json({message:"Done New Password",existUser}):
+        next(new AppError('user not found ', 409 ) ) 
+    
+})

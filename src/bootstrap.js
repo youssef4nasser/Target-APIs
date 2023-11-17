@@ -6,6 +6,7 @@ import authnRouter from "./modules/Auth/auth.routes.js"
 import { AppError } from "./utils/AppError.js"
 import couponRouter from "./modules/coupon/coupon.routes.js"
 import productRouter from "./modules/product/product.routes.js"
+import reviewRouter from "./modules/review/review.routes.js"
 
 export const bootstrap = (app)=>{
     app.get("/", (req, res) => {
@@ -17,6 +18,7 @@ export const bootstrap = (app)=>{
     app.use('/api/v1/subCategories', subCategoryRouter)
     app.use('/api/v1/coupons', couponRouter)
     app.use('/api/v1/products', productRouter)
+    app.use('/api/v1/reviews', reviewRouter)
     app.all('*', (req, res, next)=>{
         next(new AppError('Not found endpoint', 404))
     })
