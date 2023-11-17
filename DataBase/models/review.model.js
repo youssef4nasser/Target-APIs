@@ -18,6 +18,10 @@ const reviewSchema = new Schema({
     user:{
         type: mongoose.Types.ObjectId,
         ref: "User",
+    },
+    order: {
+        type: Schema.ObjectId,
+        ref: 'Order'
     }
 },{
     timestamps: true
