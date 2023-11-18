@@ -78,6 +78,7 @@ const productSchema = new Schema({
     }
 },{
     timestamps: true,
+    toJSON: {virtuals: true}
 })
 
 // slug name when ceate 
@@ -91,5 +92,15 @@ productSchema.pre('findOneAndUpdate', function() {
         this._update.slug = slugify(this._update.name);
     }
 });
+
+productSchema.virtual("reviews", {
+    ref:"Review",
+    localField: "_id",
+    foreignField: "product"
+})
+
+productSchema.pre(['findOne', 'find'], function(){
+    this.populate('reviews')
+})
 
 export const productModel = model('Product', productSchema)
