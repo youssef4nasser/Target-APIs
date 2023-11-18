@@ -8,6 +8,7 @@ import couponRouter from "./modules/coupon/coupon.routes.js"
 import productRouter from "./modules/product/product.routes.js"
 import reviewRouter from "./modules/review/review.routes.js"
 import wishlistRouter from "./modules/wishlist/wishlist.routes.js"
+import addressRouter from "./modules/address/address.routes.js"
 
 export const bootstrap = (app)=>{
     app.get("/", (req, res) => {
@@ -21,6 +22,7 @@ export const bootstrap = (app)=>{
     app.use('/api/v1/products', productRouter)
     app.use('/api/v1/reviews', reviewRouter)
     app.use('/api/v1/wishlist', wishlistRouter)
+    app.use('/api/v1/address', addressRouter)
     app.all('*', (req, res, next)=>{
         next(new AppError('Not found endpoint', 404))
     })
