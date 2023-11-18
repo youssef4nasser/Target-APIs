@@ -1,6 +1,4 @@
 import mongoose, { Schema, model } from "mongoose";
-import bcrypt from 'bcrypt'
-import { AppError } from "../../src/utils/AppError.js";
 
 const userSchema = new Schema({
     firstName: {
