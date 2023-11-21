@@ -3,6 +3,7 @@ import { productModel } from "../../../DataBase/models/product.model.js";
 import { orderModel } from "../../../DataBase/models/order.model.js";
 import { AppError } from "../../utils/AppError.js";
 import { catchError } from "../../utils/catchError.js";
+import { ApiFeatures } from "../../utils/ApiFeature.js";
 
 export const addReview = catchError(
     async (req, res, next)=>{
@@ -25,8 +26,14 @@ export const addReview = catchError(
 
 export const getAllReviews = catchError(
     async (req, res, next)=>{
-        const reviews =  await reviewModel.find({})
-        return res.status(200).json({message: "Success", reviews})
+        let apiFeatures = new ApiFeatures(reviewModel.find({}), req.query)
+        .paginate().filter().select().search().sort()
+        // execute query
+        const reviews = await apiFeatures.mongooseQuery.populate("product")
+        return res.status(200).json({message: "Success",
+        page: apiFeatures.page,
+        resulte: reviews.length,
+        reviews})
     }
 )
 

@@ -1,4 +1,5 @@
 import { couponModel } from "../../../DataBase/models/coupon.model.js";
+import { ApiFeatures } from "../../utils/ApiFeature.js";
 import { AppError } from "../../utils/AppError.js";
 import { catchError } from "../../utils/catchError.js";
 
@@ -20,8 +21,14 @@ export const addCoupon = catchError(
 
 export const getAllCoupons = catchError(
     async (req, res, next)=>{
-        const coupons =  await couponModel.find({})
-        return res.status(200).json({message: "Success", coupons})
+        let apiFeatures = new ApiFeatures(couponModel.find({}), req.query)
+        .paginate().filter().select().search().sort()
+        // execute query
+        const coupons = await apiFeatures.mongooseQuery
+        return res.status(200).json({message: "Success",
+        page: apiFeatures.page,
+        resulte: coupons.length,
+        coupons})
     }
 )
 

@@ -2,6 +2,7 @@ import { brandModel } from "../../../DataBase/models/brand.model.js";
 import { categoryModel } from "../../../DataBase/models/category.model.js";
 import { productModel } from "../../../DataBase/models/product.model.js";
 import { subCategoryModel } from "../../../DataBase/models/subcategory.model.js";
+import { ApiFeatures } from "../../utils/ApiFeature.js";
 import { AppError } from "../../utils/AppError.js";
 import { catchError } from "../../utils/catchError.js";
 import cloudinary from "../../utils/cloudinary.js";
@@ -46,8 +47,27 @@ export const addProduct = catchError(
 
 export const getAllProducts = catchError(
     async (req, res, next)=>{
-        const products =  await productModel.find({})
-        return res.status(200).json({message: "Success", products})
+        let apiFeatures = new ApiFeatures(productModel.find({}), req.query)
+        .paginate().filter().select().search().sort()
+        // execute query
+        const products = await apiFeatures.mongooseQuery.populate([
+            {
+                path: 'brand',
+                select: '-images -image'
+            },
+            {
+                path: 'category',
+                select: '-images -image'
+            },
+            {
+                path: 'subCategory',
+                select: '-images -image'
+            },
+        ]);
+        return res.status(200).json({message: "Success",
+        page: apiFeatures.page,
+        resulte: products.length,
+        products})
     }
 )
 

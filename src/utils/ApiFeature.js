@@ -1,22 +1,21 @@
 
-  export class ApiFeatures{
+export class ApiFeatures{
     constructor(mongooseQuery,queryString){
         this.mongooseQuery=mongooseQuery
         this.queryString=queryString
     }
-
     // 1- pagenation++++++++++++++++++++++++++++++++++++++
-    paganait(){
-        let page= this.queryString * 1 || 1 ;
-        if(this.queryString <=0) page = 1
+    paginate(){
+        let page = this.queryString.page * 1 || 1 ;
+        if(this.queryString.page <=0) page = 1
         let SKIP = (page-1) * 10
+        this.page = page
         this.mongooseQuery.skip(SKIP).limit(10)
         return this
     }
     //  2- filteration+++++++++++++++++++++++++++++++++++++++++++ 
     filter(){
         
-
         let fileterObj= {...this.queryString} 
         
         //(to delate propert from object)=> delete fileterObj.page or delete fileterObj['page']
@@ -34,17 +33,16 @@
     }
     //  3-sory+++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
     sort(){
-
-if(this.queryString.sort){
-    
-    /**
-     *sort (price sold ) so c.log(this.queryString.sort)== "price,sold"
-        and this incorrect so make split to use method sort()
+    if(this.queryString.sort){
+        
+        /**
+         sort (price sold ) so c.log(this.queryString.sort)== "price,sold"
+         and this incorrect so make split to use method sort()
         */   
-let sortedBy= this.queryString.sort.split(",").join(" ")
-    this.mongooseQuery.sort(sortedBy)
-}
-return this
+    let sortedBy= this.queryString.sort.split(",").join(" ")
+        this.mongooseQuery.sort(sortedBy)
+    }
+    return this
     }
     //4-search+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     search(){
@@ -58,8 +56,8 @@ return this
             {
                 $or:
                 [
-                    { title: { $regex:this.queryString.keyword , $options:'i'}},
-                    {descryption: { $regex:this.queryString.keyword , $options:'i'}}
+                    { name: { $regex:this.queryString.keyword , $options:'i'}},
+                    {description: { $regex:this.queryString.keyword , $options:'i'}}
                 ]
             }
         )

@@ -1,4 +1,5 @@
 import { categoryModel } from "../../../DataBase/models/category.model.js";
+import { ApiFeatures } from "../../utils/ApiFeature.js";
 import { AppError } from "../../utils/AppError.js";
 import { catchError } from "../../utils/catchError.js";
 import cloudinary from "../../utils/cloudinary.js";
@@ -21,8 +22,14 @@ export const addCategory = catchError(
 
 export const getAllCategories = catchError(
     async (req, res, next)=>{
-        const category =  await categoryModel.find({})
-        return res.status(200).json({message: "Success", category})
+        let apiFeatures = new ApiFeatures(categoryModel.find({}), req.query)
+        .paginate().filter().select().search().sort()
+        // execute query
+        const category = await apiFeatures.mongooseQuery
+        return res.status(200).json({message: "Success",
+        page: apiFeatures.page,
+        resulte: category.length,
+        category})
     }
 )
 

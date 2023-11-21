@@ -20,7 +20,7 @@ export const removeFromAddress = catchError(
 
 export const getUserAddress = catchError(
     async (req, res, next)=>{
-        const userAddress =  await userModel.findById(req.user.id).populate("address")
+        const userAddress =  await userModel.findById(req.user.id)
         return res.status(200).json({message: "Success", address:userAddress.address})
     }
 )

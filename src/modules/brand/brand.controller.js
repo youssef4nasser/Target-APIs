@@ -2,6 +2,7 @@ import { brandModel } from "../../../DataBase/models/brand.model.js";
 import { AppError } from "../../utils/AppError.js";
 import { catchError } from "../../utils/catchError.js";
 import cloudinary from "../../utils/cloudinary.js";
+import { ApiFeatures } from "../../utils/ApiFeature.js";
 
 export const addBrand = catchError(
     async (req, res, next)=>{
@@ -21,8 +22,14 @@ export const addBrand = catchError(
 
 export const getAllBrands = catchError(
     async (req, res, next)=>{
-        const brands =  await brandModel.find({})
-        return res.status(200).json({message: "Success", brands})
+        let apiFeatures = new ApiFeatures(brandModel.find({}), req.query)
+        .paginate().filter().select().search().sort()
+        // execute query
+        const brands = await apiFeatures.mongooseQuery;
+        return res.status(200).json({message: "Success",
+        page: apiFeatures.page,
+        resulte: brands.length,
+        brands})
     }
 )
 

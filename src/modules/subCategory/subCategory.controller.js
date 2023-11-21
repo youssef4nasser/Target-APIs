@@ -1,5 +1,6 @@
 import { categoryModel } from "../../../DataBase/models/category.model.js";
 import { subCategoryModel } from "../../../DataBase/models/subcategory.model.js";
+import { ApiFeatures } from "../../utils/ApiFeature.js";
 import { AppError } from "../../utils/AppError.js";
 import { catchError } from "../../utils/catchError.js";
 import cloudinary from "../../utils/cloudinary.js";
@@ -29,8 +30,14 @@ export const getAllSubCategories = catchError(
         if(req.params.categoryId){
             filter = {category: req.params.categoryId}
         }
-        const subCategory =  await subCategoryModel.find(filter)
-        return res.status(200).json({message: "Success", subCategory})
+        let apiFeatures = new ApiFeatures(subCategoryModel.find(filter), req.query)
+        .paginate().filter().select().search().sort()
+        // execute query
+        const subCategory = await apiFeatures.mongooseQuery.populate("category")
+        return res.status(200).json({message: "Success",
+        page: apiFeatures.page,
+        resulte: subCategory.length,
+        subCategory})
     }
 )
 
