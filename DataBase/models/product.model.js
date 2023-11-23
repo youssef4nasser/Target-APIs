@@ -92,13 +92,13 @@ productSchema.pre('findOneAndUpdate', function() {
         this._update.slug = slugify(this._update.name);
     }
 });
-
+// virtual field reviews
 productSchema.virtual("reviews", {
     ref:"Review",
     localField: "_id",
     foreignField: "product"
 })
-
+// populate on virtual field reviews
 productSchema.pre(['findOne', 'find'], function(){
     this.populate('reviews')
 })

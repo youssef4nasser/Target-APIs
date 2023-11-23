@@ -1,8 +1,12 @@
 
-export const validate = (schema)=>{
+export const validate = (schema, token = false)=>{
     return (req, res, next)=>{
-        const inputs = {...req.params, ...req.body, ...req.query}
-        
+        let inputs = {...req.params, ...req.body, ...req.query}
+        // validate token from headers
+        if(req.headers.token && token == true){
+            inputs = {token: req.headers.token}
+        }
+        // validate files
         if (req.file || req.files) {
             inputs.file = req.file || req.files
         }
