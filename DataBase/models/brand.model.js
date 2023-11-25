@@ -28,7 +28,9 @@ brandSchema.pre('save', function(){
 
 // slug name when updating brand
 brandSchema.pre('findOneAndUpdate', function() {
-    this._update.slug = slugify(this._update.name)
+    if(this._update.name){
+        this._update.slug = slugify(this._update.name);
+    }
 });
 
 export const brandModel = model('Brand', brandSchema)

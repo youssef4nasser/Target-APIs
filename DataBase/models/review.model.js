@@ -18,9 +18,17 @@ const reviewSchema = new Schema({
     user:{
         type: mongoose.Types.ObjectId,
         ref: "User",
+    },
+    order: {
+        type: Schema.ObjectId,
+        ref: 'Order'
     }
 },{
     timestamps: true
+})
+
+reviewSchema.pre(['findOne', 'find'], function(){
+    this.populate("user", "firstName lastName")
 })
 
 export const reviewModel = mongoose.model('Review', reviewSchema)

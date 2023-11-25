@@ -1,5 +1,6 @@
 import { categoryModel } from "../../../DataBase/models/category.model.js";
 import { subCategoryModel } from "../../../DataBase/models/subcategory.model.js";
+import { ApiFeatures } from "../../utils/ApiFeature.js";
 import { AppError } from "../../utils/AppError.js";
 import { catchError } from "../../utils/catchError.js";
 import cloudinary from "../../utils/cloudinary.js";
@@ -25,8 +26,18 @@ export const addSubCategory = catchError(
 
 export const getAllSubCategories = catchError(
     async (req, res, next)=>{
-        const subCategory =  await subCategoryModel.find({})
-        return res.status(200).json({message: "Success", subCategory})
+        let filter = {}
+        if(req.params.categoryId){
+            filter = {category: req.params.categoryId}
+        }
+        let apiFeatures = new ApiFeatures(subCategoryModel.find(filter), req.query)
+        .paginate().filter().select().search().sort()
+        // execute query
+        const subCategory = await apiFeatures.mongooseQuery.populate("category")
+        return res.status(200).json({message: "Success",
+        page: apiFeatures.page,
+        resulte: subCategory.length,
+        subCategory})
     }
 )
 
@@ -46,9 +57,12 @@ export const updateSubCategory = catchError(
         let subCategory = await subCategoryModel.findById(id)
         // check this subCategory found or no
         !subCategory && next(new AppError("Not found this SubCategory", 409))
-        // Check if the Category exists
-        const categoryId = await categoryModel.findById(req.body.category)
-        if(!categoryId) return next(new AppError('The Category does not exist', 404));
+        // if update category id
+        if(req.body.category){
+            // Check if the Category exists
+            const categoryId = await categoryModel.findById(req.body.category)
+            if(!categoryId) return next(new AppError('The Category does not exist', 404));
+        }
         // update name
         if(req.body.name){
             // check if subCategory name already exist

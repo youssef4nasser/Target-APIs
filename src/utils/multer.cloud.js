@@ -9,6 +9,7 @@ export const fileValidation={
 
 export function fileUploud(coustomValidation=[]){
     const storage = multer.diskStorage({});
+    
     function fileFilter (req, file, cb) {
         if(coustomValidation.includes(file.mimetype)){
             cb(null, true)
