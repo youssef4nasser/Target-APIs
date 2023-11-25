@@ -58,6 +58,13 @@ const userSchema = new Schema({
         phone: String
     }],
     passwordChangeAt: Date,
+    image: {
+        type: String,
+    },
+    provider: {
+        type: String,
+        enum: ['Systeme', 'Google', 'Facebook'],
+    }
 },{
     timestamps: true
 })

@@ -7,6 +7,7 @@ const authnRouter = express.Router();
 
 authnRouter.post('/signUp',authController.SignUp)
 authnRouter.post('/SignIn',authController.SignIn)
+authnRouter.post('/loginGoogle',authController.loginGoogle)
 // confirm with code
 
 // authnRouter.patch('/confirme',authController.confirm_Code);
