@@ -41,6 +41,13 @@ import nodemailer from "nodemailer";
          to:email,
          subject,
          html,
+         attachments:[
+          {
+            path:"invoice.pdf",
+            contentType:"application/pdf"
+          }
+         ]
+
        });
        return info.rejected.length? false: true
  }

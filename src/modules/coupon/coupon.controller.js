@@ -10,7 +10,7 @@ export const addCoupon = catchError(
             return next(new AppError('Expiration Date must be greater than current date', 403));
         }
         // check if coupon already exist or no
-        const isExist = await couponModel.findOne({code: req.body.code})
+        const isExist = await couponModel.findOne({name: req.body.name})
         if(isExist) return next(new AppError("This Coupon already exist", 409))
         // create new coupon and save on DB
         const coupon = new couponModel(req.body)
@@ -44,7 +44,7 @@ export const getCoupon = catchError(
 export const updateCoupon = catchError(
     async(req, res, next)=>{
         const {id} = req.params
-        const {code, expires, discount} = req.body
+        const {name, expires, discount} = req.body
         // check date
         if(req.body.expire < date.now()){
             return next(new AppError('Expiration Date must be greater than current date', 403));
@@ -56,7 +56,7 @@ export const updateCoupon = catchError(
         // check if coupon code already exist and update
         const updateCoupon = await couponModel.findOneAndUpdate(
             {name: req.body.name},
-            {code, expires, discount},
+            {name, expires, discount},
             {new: true})
         !updateCoupon && next(new AppError("This Coupon already exist", 409))
         updateCoupon && res.status(200).json({message: "Success", coupon:updateCoupon})

@@ -57,7 +57,7 @@ const userSchema = new Schema({
         street: String,
         phone: String
     }],
-    passwordChangeAt: Date,
+    changePasswordAt: Date,
 },{
     timestamps: true
 })

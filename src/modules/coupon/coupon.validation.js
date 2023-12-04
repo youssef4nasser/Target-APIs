@@ -1,9 +1,9 @@
 import Joi from "joi";
 
 export const addCouponValidaion = Joi.object({
-    code: Joi.string().min(2).max(25).required(),
+    name: Joi.string().min(2).max(25).required(),
     discount: Joi.number().positive().min(1).max(100).required(),
-    expire: Joi.date().required().iso()
+    expire: Joi.date().iso()
 });
 
 export const updateCouponValidation = Joi.object({

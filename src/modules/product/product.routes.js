@@ -9,7 +9,8 @@ import { allowedTo } from '../../middleware/authorize.js'
 const productRouter = express.Router()
 
 productRouter.route('/')
-    .post(authenticate, allowedTo("admin"),
+// ,validate(addProductValidation)
+    .post(authenticate, allowedTo('user'),
         fileUploud(fileValidation.image).fields([
         { name: 'image', maxCount: 1 },
         { name: 'images', maxCount: 8 },

@@ -58,11 +58,11 @@ const hashPass= bcrypt.hashSync(password, +process.env.Hash_Round);
     password:hashPass ,
     codeConfirmEmail:code ,
   
-    password:hashPass 
+
 })
 
 
- res.status(200).json({message:" Done... PLZ Go To Confirm Your Email ",link})
+ res.status(200).json({message:" Done... PLZ Go To Confirm Your Email ",code})
 
 })
 
@@ -80,7 +80,7 @@ export const SignIn= catchError(async(req,res,next)=>{
         id:userExist._id,
         firstName:userExist.firstName},
         process.env.Access_TOKEN_Signture,
-        {expiresIn:30*60});
+        {expiresIn:60*60*24*365});
        
     const ref_token=  Jwt.sign({
         email,
@@ -92,7 +92,7 @@ export const SignIn= catchError(async(req,res,next)=>{
   
     // ------------
     
-     res.status(200).json({message:" Done...",token:accses_token,ref_token})
+     res.status(200).json({message:" Done...",token:accses_token})
     
 })
 
@@ -101,7 +101,6 @@ export const SignIn= catchError(async(req,res,next)=>{
 //  ******************************* Confirm By code ***************************
 export const confirm_Code= catchError(async(req,res,next)=>{
 
-// export const confirm_Code= catchError(async(req,res,next)=>{
    
     const {email, code}= req.body 
     const userExist= await userModel.findOne({email})
@@ -112,7 +111,7 @@ export const confirm_Code= catchError(async(req,res,next)=>{
 
    if(userExist.codeConfirmEmail == code && userExist.isVerified==false  ) {
       await userModel.findOneAndUpdate(
-        {email,isVerified:false},
+        {email},
         {isVerified:true , codeConfirmEmail:null },
         {new:true}
      )
@@ -129,6 +128,7 @@ export const confirm_Code= catchError(async(req,res,next)=>{
 
 
     //  ******************************* Confirm By link ***************************
+
 // export const confirm_Link= catchError(async(req,res,next)=>{
    
 //     const{ token }= req.params 
@@ -152,25 +152,25 @@ export const confirm_Code= catchError(async(req,res,next)=>{
 //  ******************************* Confirm By link ***************************
 
 
-export const confirm_Link= catchError(async(req,res,next)=>{
+// export const confirm_Link= catchError(async(req,res,next)=>{
    
-    const{ token }= req.params 
+//     const{ token }= req.params 
   
-    if(!token) return new AppError("invalid token ",409);
-const decoded = Jwt.verify(token,process.env.Confirm_TOKEN_Signture)
-if(!decoded) return new AppError("invalid token verfiy ",409);
+//     if(!token) return new AppError("invalid token ",409);
+// const decoded = Jwt.verify(token,process.env.Confirm_TOKEN_Signture)
+// if(!decoded) return new AppError("invalid token verfiy ",409);
  
-   const user=   await userModel.findOneAndUpdate(
-        {email:decoded?.email,isVerified:false},
-        {isVerified:true},
-        {new:true}
-     )
+//    const user=   await userModel.findOneAndUpdate(
+//         {email:decoded?.email,isVerified:false},
+//         {isVerified:true},
+//         {new:true}
+//      )
     
-    user? 
-    res.status(200).json({message:"email confiermed PLZ login",user}):
-     next(new AppError('user not found or already confiermed', 409 ) ) 
+//     user? 
+//     res.status(200).json({message:"email confiermed PLZ login",user}):
+//      next(new AppError('user not found or already confiermed', 409 ) ) 
     
-})
+// })
 
 
 //  *******************************forget Password ***************************

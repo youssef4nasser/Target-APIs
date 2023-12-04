@@ -8,8 +8,8 @@ import { allowedTo } from '../../middleware/authorize.js'
 const couponRouter = express.Router()
 
 couponRouter.route('/')
-    .post(authenticate, allowedTo("admin"), validate(addCouponValidaion), controller.addCoupon)
-    .get(authenticate, allowedTo("admin"), controller.getAllCoupons)
+    .post(authenticate, allowedTo("user"), validate(addCouponValidaion), controller.addCoupon)
+    .get(authenticate, allowedTo("user"), controller.getAllCoupons)
 
 couponRouter.route('/:id')
     .get(authenticate, allowedTo("admin"), validate(idValidate), controller.getCoupon)

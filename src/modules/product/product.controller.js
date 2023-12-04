@@ -23,11 +23,14 @@ export const addProduct = catchError(
         if(!subCategory) return next(new AppError('The SubCategory does not exist', 404));
 
         // upload main image
-        const {secure_url, public_id} = await cloudinary.uploader.upload(req.files.image[0].path,
-              {folder: `${process.env.FLODER_NAME}/Products`})
-        req.body.image = {secure_url, public_id}
+        if(req.file) {
+            const {secure_url, public_id} = await cloudinary.uploader.upload(req.files?.image[0].path,
+                {folder: `${process.env.FLODER_NAME}/Products`})
+          req.body.image = {secure_url, public_id}
+        }
+      
 
-        if(req.files.images){
+        if(req.files?.images){
             let images=[];
             for (const file of req.files.images) {
                 const {secure_url, public_id} = await cloudinary.uploader.upload(file.path,
