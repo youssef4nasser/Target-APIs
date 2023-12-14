@@ -20,6 +20,7 @@ import { sendEmail } from "../../utils/email.js";
 import bcrypt, { compare } from "bcrypt"
 import Jwt from "jsonwebtoken";
 import {OAuth2Client} from 'google-auth-library'
+import axios from "axios";
 
 //  ******************************* sign up ***************************
 
@@ -201,7 +202,7 @@ const hashPass= bcrypt.hashSync(newPassword, +process.env.Hash_Round);
 })
 
 //  ******************************* loginGoogle ***************************
-export const loginGoogle= catchError(
+export const loginGoogle = catchError(
     async(req,res,next)=>{
         const {idToken} = req.body
         const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -213,7 +214,7 @@ export const loginGoogle= catchError(
             const payload = ticket.getPayload();
             return payload
         }
-        const {given_name, family_name, email_verified, picture, email} = await verify()
+        const {given_name, family_name, email, email_verified, picture} = await verify()
         
         if(!email_verified) return next(new AppError('Email not verified with Google', 409 ) )
         
@@ -261,5 +262,58 @@ export const loginGoogle= catchError(
             {expiresIn:60*60*24*365}
         );
         return res.status(201).json({message: "Done",token:accses_token, ref_token, user:SignupUser})
+    }
+)
+//  ******************************* loginFacebook ***************************
+
+export const loginFacebook = catchError(
+    async(req, res)=> {
+        const { accessToken } = req.body;
+        const { data } = await axios.get(`https://graph.facebook.com/me?fields=id,name,picture,email&access_token=${accessToken}`);
+
+        const user = await userModel.findOne({email: data.email,  provider: "Facebook"})
+        // LoginUser
+        if(user){
+            const accses_token= Jwt.sign({
+                email: user.email,
+                id: user._id,
+                firstName: user.firstName},
+                process.env.Access_TOKEN_Signture,
+                {expiresIn:30*60});
+            
+            const ref_token=  Jwt.sign({
+                email: user.email,
+                id: user._id,
+                firstName: user.firstName},
+                process.env.Refresh_TOKEN_Signture,
+                {expiresIn:60*60*24*365}
+            );
+            return res.status(200).json({message:" Done", token:accses_token,ref_token})    
+        }
+        // SignupUser
+        const SignupUser = await userModel.create({
+            firstName: data.name.split(" ")[0],
+            lastName: data.name.split(" ")[1],
+            email: data.email,
+            image: data.picture.data.url,
+            isVerified: true,
+            password: bcrypt.hashSync(nanoid(6), +process.env.Hash_Round),
+            provider: "Facebook"
+        })
+        const accses_token = Jwt.sign({
+            email:SignupUser.email,
+            id:SignupUser._id,
+            firstName:SignupUser.firstName},
+            process.env.Access_TOKEN_Signture,
+            {expiresIn:30*60});
+
+        const ref_token=  Jwt.sign({
+            email:SignupUser.email,
+            id:SignupUser._id,
+            firstName:SignupUser.firstName},
+            process.env.Refresh_TOKEN_Signture,
+            {expiresIn:60*60*24*365}
+        );
+        return res.status(201).json({message:" Done", token:accses_token,ref_token})    
     }
 )
