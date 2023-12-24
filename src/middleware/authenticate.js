@@ -6,10 +6,7 @@ import Jwt from "jsonwebtoken"
 export const authenticate = catchError( async (req, res, next)=>{
 
         const {token} = req.headers
-        // validate headers 
-        // ...........
-        
-        // check fi token not provide ()
+        // check if token not provide ()
         if(!token) return next(new AppError("Token is required", 401))
         // cheack Bareer_token (team__ )
         if(!token?.startsWith(process.env.BARER_TOKEN)) return next(new AppError('Invalid token', 403))

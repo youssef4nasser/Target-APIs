@@ -21,7 +21,7 @@ export const addProduct = catchError(
         // Check the subCategory
         const subCategory = await subCategoryModel.findById(req.body.subCategory)
         if(!subCategory) return next(new AppError('The SubCategory does not exist', 404));
-
+console.log(req.files.image[0].path);
         // upload main image
         if(req.file) {
             const {secure_url, public_id} = await cloudinary.uploader.upload(req.files?.image[0].path,

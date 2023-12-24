@@ -63,6 +63,7 @@ export const updateBrand = catchError(
             // upload new image to Cloudinar
             const {secure_url, public_id} = await cloudinary.uploader.upload(req.file.path,
                   {folder: `${process.env.FLODER_NAME}/brand`})
+                  // save the url of new image and publicId for deleting it later
                   brand.image = {secure_url, public_id}
         }
         await brand.save()

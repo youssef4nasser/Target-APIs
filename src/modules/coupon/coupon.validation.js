@@ -9,7 +9,7 @@ export const addCouponValidaion = Joi.object({
 export const updateCouponValidation = Joi.object({
     code: Joi.string().min(2).max(25),
     discount: Joi.number().positive().min(1).max(100),
-    expire: Joi.date().iso()
+    expire: Joi.date().greater(Date.now() - 24 * 60 * 60 * 1000).required()
 })
 
 export const idValidate = Joi.object({

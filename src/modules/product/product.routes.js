@@ -14,15 +14,17 @@ productRouter.route('/')
         fileUploud(fileValidation.image).fields([
         { name: 'image', maxCount: 1 },
         { name: 'images', maxCount: 8 },
+        { name: 'videos', maxCount: 3 },
     ]),validate(addProductValidation), controller.addProduct)
     .get(controller.getAllProducts)
-
+    
 productRouter.route('/:id')
     .get(validate(idValidate), controller.getProduct)
-    .put(authenticate, allowedTo("admin"), 
-    fileUploud(fileValidation.image).fields([
+    .put(
+    fileUploud(fileValidation.mix).fields([
         { name: 'image', maxCount: 1 },
         { name: 'images', maxCount: 8 },
+        { name: 'videos', maxCount: 3 },
     ]), validate(updateProductValidation), controller.updateProduct)
     .delete(authenticate, allowedTo("admin"), validate(idValidate), controller.deleteProduct)
 
