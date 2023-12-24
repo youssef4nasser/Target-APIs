@@ -24,7 +24,7 @@ import Jwt from "jsonwebtoken";
 export const SignUp= catchError(async(req,res,next)=>{
 const {firstName,lastName,email,password}= req.body 
 const userExist= await userModel.findOne({email})
-if(userExist) return new AppError("email already exist ",409);
+if(userExist) return next (new AppError("email already exist ",409));
 // %%%%%%%% confirm email (link or code )
 //  1- code## 
 // (// // user.codeConfirmEmail=code ) if use code put this line in userModel
