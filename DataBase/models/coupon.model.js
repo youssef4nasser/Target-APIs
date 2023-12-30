@@ -1,20 +1,27 @@
 import { Schema, model } from "mongoose";
 
 const couponSchema = new Schema({
-    code: {
+    name:{
         type : String,
-        required:[true,'coupon code is Required'],
+        required:[true,'coupon name is Required'],
         unique: true,
         trim: true,
     },
+    // name==code
+    // code: {
+    //     type : String,
+    //     required:[true,'coupon code is Required'],
+    //     unique: true,
+    //     trim: true,
+    // },
     expire: {
-        type: Date,
-        required: true,
+        type: Date
+  
     },
     discount:{
         type: Number,
         required: true,
-        min: 0,
+        default: 1,
     },
     usedBy: [{
         type: Schema.ObjectId,

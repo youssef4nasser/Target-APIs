@@ -1,42 +1,42 @@
-import { Schema, model } from "mongoose";
 
-const orderSchema = new Schema({
-    user:{
-        type: Schema.Types.ObjectId,
-        ref: "User",
-    },
-    cartItems: [
+import { Schema, Types, model } from "mongoose";
+
+const orderScema = new Schema({
+
+    phone: { type: [String], required: true },
+    adresses: { type: [String], required: true },
+    userId: { type: Schema.ObjectId, ref: "User", required: true },
+    products: [
         {
-            product: {type: Schema.Types.ObjectId, ref: "Product" },
-            quantity: {
-                type : Number ,
-                default : 1
-            },
-            price: Number,
+            name: { type: String, ref: "Product", required: true },
+            productId: { type: Schema.ObjectId, ref: "Product", required: true },
+            quntitiy: { type: Number, required: true },
+            unitePrice: { type: Number, ref: "Product", required: true },
+            finalPrice: { type: Number, ref: "Product", required: true }
         }
+
     ],
-    totalOrderPrice: Number,
-    shippingAddress: {
-        city: String,
-        streetName:String,
-        phone: String
+    copounId: {
+        type: Schema.ObjectId, ref: "Coupon"
     },
-    paymentMethond: {
+    subToatal: { type: Number, required: true },
+    // price after coupone
+    totalPillAmount: { type: Number, ref: "Product", required: true },
+    paymentMethod: {
         type: String,
-        enum: ['card', 'cash'],
-        default: 'cash'
+        default: "cash",
+        enum: ['cash', 'order']
     },
-    isPaid: {
-        type: Boolean,
-        default: false
+    // ==status
+    status: {
+        type: String,
+        default: "placed",
+        enum: ['waitForPayment', 'placed', 'rejected', 'onWay', 'canceled', 'delivered']
     },
-    paidAt: Date,
-    isDelivered: {
-        type: Boolean,
-        default: false
-    },
-    deliveredAt: Date,
+    // reason for canceld
+    reason: {
+        type: String
+    }
+}, { timestamps: true })
 
-}, {timestamps: true})
-
-export const orderModel = model('Order', orderSchema)
+export const orderModel = model('Order', orderScema)

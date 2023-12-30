@@ -35,14 +35,22 @@ if(userExist) return new AppError("email already exist ",409);
 // sendEmail(email,"Confirm Your Email... ",`<h1>CODE:  ${code} </h1>`);
 // 2- link##
 const token= Jwt.sign({email},process.env.Confirm_TOKEN_Signture, { expiresIn:30*60});
+
 const link = `${req.protocol}://${req.headers.host}/api/v1/auth/confirme/${token}`
 const ref_token= Jwt.sign({email},process.env.Confirm_refToken_Signture);
 const ref_link = `${req.protocol}://${req.headers.host}/api/v1/auth/confirme/${ref_token}`
-sendEmail(email,
-    "Confirm Your Email... ",
-    `<a href="${link}> Confirm  Email </a> 
-    <a href="${ref_link}> Confirm  Email </a>
-    `);
+
+// sendEmail(email,
+//     "Confirm Your Email... ",
+//     `<a href="${link}> Confirm  Email </a> 
+//     <a href="${ref_link}> Confirm  Email </a>
+//     `);
+const code = nanoid(4);
+    sendEmail(email,
+        "Confirm Your Email... ",
+        `<h1> Gerate Code : ${code}
+       
+        `);
 
 // ------------
 const hashPass= bcrypt.hashSync(password, +process.env.Hash_Round);
@@ -51,9 +59,14 @@ const hashPass= bcrypt.hashSync(password, +process.env.Hash_Round);
     lastName,
     email,
     password:hashPass ,
-    provider: "Systeme"
+    codeConfirmEmail:code ,
+  
+
 })
- res.status(200).json({message:" Done... PLZ Go To Confirm Your Email ",link})
+
+
+ res.status(200).json({message:" Done... PLZ Go To Confirm Your Email ",code})
+
 })
 
 
@@ -70,7 +83,7 @@ export const SignIn= catchError(async(req,res,next)=>{
         id:userExist._id,
         firstName:userExist.firstName},
         process.env.Access_TOKEN_Signture,
-        {expiresIn:30*60});
+        {expiresIn:60*60*24*365});
        
     const ref_token=  Jwt.sign({
         email,
@@ -82,36 +95,59 @@ export const SignIn= catchError(async(req,res,next)=>{
   
     // ------------
     
-    return res.status(200).json({message:" Done",token:accses_token,ref_token})
+     res.status(200).json({message:" Done...",token:accses_token})
     
 })
 
 
 
 //  ******************************* Confirm By code ***************************
+export const confirm_Code= catchError(async(req,res,next)=>{
 
-// export const confirm_Code= catchError(async(req,res,next)=>{
    
-//     const {email, code}= req.body 
-//     const userExist= await userModel.findOne({email})
-//     if(!userExist) return new AppError("email already exist ",409);
+    const {email, code}= req.body 
+    const userExist= await userModel.findOne({email})
+    if(!userExist) return new AppError("email already exist ",409);
 
-//     if(!userExist.codeConfirmEmail) return new AppError("incorrect code",409);
+    if(!userExist.codeConfirmEmail) return new AppError("incorrect code",409);
 
 
-//    if(userExist.codeConfirmEmail == code&& userExist.isVerified==false  ) {
-//       await userModel.findOneAndUpdate(
-//         {email,isVerified:false},
+   if(userExist.codeConfirmEmail == code && userExist.isVerified==false  ) {
+      await userModel.findOneAndUpdate(
+        {email},
+        {isVerified:true , codeConfirmEmail:null },
+        {new:true}
+     )
+    
+    }
+
+
+    
+    userExist? 
+    res.status(200).json({message:"email confiermed PLZ login",userExist}):
+     next(new AppError('user not found or already confiermed', 409 ) ) 
+    
+    })
+
+
+    //  ******************************* Confirm By link ***************************
+
+// export const confirm_Link= catchError(async(req,res,next)=>{
+   
+//     const{ token }= req.params 
+  
+//     if(!token) return new AppError("invalid token ",409);
+// const decoded = Jwt.verify(token,process.env.Confirm_TOKEN_Signture)
+// if(!decoded) return new AppError("invalid token verfiy ",409);
+ 
+//    const user=   await userModel.findOneAndUpdate(
+//         {email:decoded?.email,isVerified:false},
 //         {isVerified:true},
 //         {new:true}
 //      )
     
-//     }
-
-
-    
-//     userExist? 
-//     res.status(200).json({message:"email confiermed PLZ login",userExist}):
+//     user? 
+//     res.status(200).json({message:"email confiermed PLZ login",user}):
 //      next(new AppError('user not found or already confiermed', 409 ) ) 
     
 //     })
@@ -119,25 +155,25 @@ export const SignIn= catchError(async(req,res,next)=>{
 //  ******************************* Confirm By link ***************************
 
 
-export const confirm_Link= catchError(async(req,res,next)=>{
+// export const confirm_Link= catchError(async(req,res,next)=>{
    
-    const{ token }= req.params 
+//     const{ token }= req.params 
   
-    if(!token) return new AppError("invalid token ",409);
-const decoded = Jwt.verify(token,process.env.Confirm_TOKEN_Signture)
-if(!decoded) return new AppError("invalid token verfiy ",409);
+//     if(!token) return new AppError("invalid token ",409);
+// const decoded = Jwt.verify(token,process.env.Confirm_TOKEN_Signture)
+// if(!decoded) return new AppError("invalid token verfiy ",409);
  
-   const user=   await userModel.findOneAndUpdate(
-        {email:decoded?.email,isVerified:false},
-        {isVerified:true},
-        {new:true}
-     )
+//    const user=   await userModel.findOneAndUpdate(
+//         {email:decoded?.email,isVerified:false},
+//         {isVerified:true},
+//         {new:true}
+//      )
     
-    user? 
-    res.status(200).json({message:"email confiermed PLZ login",user}):
-     next(new AppError('user not found or already confiermed', 409 ) ) 
+//     user? 
+//     res.status(200).json({message:"email confiermed PLZ login",user}):
+//      next(new AppError('user not found or already confiermed', 409 ) ) 
     
-})
+// })
 
 
 //  *******************************forget Password ***************************

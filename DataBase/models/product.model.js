@@ -18,6 +18,12 @@ const productSchema = new Schema({
         default:0,
         min: 0
     },
+    // price after discount 
+    finalPrice:{
+        type : Number,
+        default:0,
+        min: 0 
+    },
     description: {
         type : String,
         minlength:[3, "description should be more than 3 characters"],
@@ -29,6 +35,7 @@ const productSchema = new Schema({
         default:0,
         min: 0
     },
+
     sold: {
         type :Number,
         default:0,

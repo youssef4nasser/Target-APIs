@@ -30,9 +30,9 @@ export const addProductValidation = Joi.object({
         }
     }).required(),
     discount: Joi.number().min(1).max(100).positive(),
-    brand: Joi.string().hex().length(24).required(),
-    category: Joi.string().hex().length(24).required(),
-    subCategory: Joi.string().hex().length(24).required(),
+    brand: Joi.string().hex().length(24),
+    category: Joi.string().hex().length(24),
+    subCategory: Joi.string().hex().length(24),
     file: Joi.required(),
 })
 
