@@ -1,9 +1,10 @@
 import mongoose, { Schema, model } from "mongoose";
 
 const userSchema = new Schema({
-    FullName: {
+    userName: {
         type : String,
         required: true,
+        unique: true,
         trim: true,
         maxlength: [150, "FullName should be less than 150 characters"],
     },

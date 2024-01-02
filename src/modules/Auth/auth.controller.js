@@ -12,7 +12,7 @@ import axios from "axios";
 
 export const SignUp= catchError(
     async(req,res,next)=>{
-        const {FullName,email,password} = req.body 
+        const {userName,email,password} = req.body 
         const userExist= await userModel.findOne({email})
         if(userExist) return next (new AppError("Email already exist ",409));
 
@@ -21,7 +21,7 @@ export const SignUp= catchError(
 
         const hashPass = bcrypt.hashSync(password, +process.env.Hash_Round);
         await userModel.create({
-            FullName,
+            userName,
             email,
             password:hashPass ,
             codeConfirmEmail:code,
@@ -60,7 +60,7 @@ export const SignIn= catchError(
     const accses_token= Jwt.sign({
         email,
         id:userExist._id,
-        FullName:userExist.FullName,
+        userName:userExist.userName,
         role:userExist.role},
         process.env.Access_TOKEN_Signture,
         );
@@ -82,7 +82,7 @@ export const forgetPassword = catchError(
 
         await userModel.findOneAndUpdate({email},{codeForgetPassword:code},{new:true})
 
-        return res.status(200).json({message:" Done... PLZ Go To Reaset Your ForgetPassword ", code})
+        return res.status(200).json({message:" Done... PLZ check Your email "})
 })
 
 //  ******************************* resetPassword ***************************
