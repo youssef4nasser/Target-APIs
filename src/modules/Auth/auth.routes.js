@@ -22,7 +22,7 @@ authnRouter.patch('/confirme',authController.confirm_Code);
 
 
 authnRouter.patch('/forgetPassword',authController.forgetPassword);
- authnRouter.patch('/resetPassword/:token',authController.resetPassword);
+ authnRouter.patch('/resetPassword',authController.resetPassword);
 
 
 export default authnRouter

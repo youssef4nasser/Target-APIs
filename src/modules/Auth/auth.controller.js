@@ -77,7 +77,7 @@ export const SignIn= catchError(async(req,res,next)=>{
     const userExist= await userModel.findOne({email})
     if(!userExist || !bcrypt.compareSync(password, userExist.password)) return next(new AppError("incorrect email or password... ",409))
     if(!userExist.isVerified) return next(new AppError("please confirm your email first",409))
-
+console.log(userExist)
     const accses_token= Jwt.sign({
         email,
         id:userExist._id,
@@ -181,59 +181,49 @@ export const confirm_Code= catchError(async(req,res,next)=>{
 export const forgetPassword = catchError(async(req,res,next)=>{
 const {email}= req.body 
 const userExist= await userModel.findOne({email})
-if(!userExist) return new AppError("email not exist ",409);
-// %%%%%%%% create (hasing code and token )
-//  1- code## 
+if(!userExist) return next(new AppError("email not exist ",409))
+// %%%%%%%% create (hasing code  )
+//   code## 
 
 const code = nanoid(4);
-const hashCode= bcrypt.hashSync(code, +process.env.Hash_Round);
-
-// 2- link && token##
-const token_forgetPass= Jwt.sign(
-    { email,code:hashCode},
-    process.env.Token_forgetPass_TOKEN_Signture,
-     { expiresIn:30*60}
-     );
-const link = `${req.protocol}://${req.headers.host}/api/v1/auth/resetPassword/${token_forgetPass}`
+// const hashCode= bcrypt.hashSync(code,Number(process.env.Hash_Round));
 
 sendEmail(email,
-    "reseet Password... ",
-    `<a href="${link}> Reseet Password </a> 
-
-    `);
+    "Reset Your Password... ",
+    `<h1>  Code : ${code}
+   
+    `);;
 
 // ------------
- await userModel.updateOne({email},{codeForgetPassword:hashCode},{new:true})
+ await userModel.findOneAndUpdate({email},{codeForgetPassword:code},{new:true})
 
 
 
- res.status(200).json({message:" Done... PLZ Go To Reaset Your ForgetPassword ",link})
+ res.status(200).json({message:" Done... PLZ Go To Reaset Your ForgetPassword ",code})
 
 })
 
 //  ******************************* resetPassword ***************************
 export const resetPassword= catchError(async(req,res,next)=>{
 
-    const{ token }= req.params 
-    const{newPassword}= req.body
-    if(!token) return new AppError("invalid token ",409);
-const decoded = Jwt.verify(token,process.env.Token_forgetPassSignture)
-if(!decoded) return new AppError("invalid token verfiy ",409);
-const existUser= await userModel.findOne({email:decoded?.email})
-if(!existUser) return new AppError("user not found ",409);
-    if(decoded.code != existUser.codeForgetPassword) return new AppError("invalid token ",409);
+ 
+    const{newPassword,email,code}= req.body;
+    const existUser= await userModel.findOne({email})
+    if(!existUser) return next( new AppError("user not found ",404));
 
-const hashPass= bcrypt.hashSync(newPassword, +process.env.Hash_Round);
+if(existUser.codeForgetPassword == code ) {
+    await userModel.findOneAndUpdate(
+      {email},
+      {password:newPassword , codeForgetPassword:null },
+      {new:true}
+   )
+  
+  }else{
+    return next( new AppError("expire code !",404));
+  }
 
-    const user=   await userModel.findOneAndUpdate(
-        {email:decoded?.email,codeForgetPassword:decoded?.code},
-        {password:hashPass},
-        {new:true}
-        )
+    res.status(200).json({message:"Done New Password",existUser})
 
-        user? 
-    res.status(200).json({message:"Done New Password",existUser}):
-        next(new AppError('user not found ', 409 ) ) 
     
 })
 
