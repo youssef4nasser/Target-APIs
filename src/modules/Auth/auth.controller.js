@@ -28,7 +28,7 @@ export const SignUp= catchError(async(req,res,next)=>{
 const {firstName,lastName,email,password}= req.body 
 const userExist= await userModel.findOne({email})
 if(userExist) return new AppError("email already exist ",409);
-// %%%%%%%% confirm email (link or code )
+// %%%%%%%% confirm email (link or code ) 
 //  1- code## 
 // (// // user.codeConfirmEmail=code ) if use code put this line in userModel
 // const code = nanoid(4);
@@ -60,13 +60,8 @@ const hashPass= bcrypt.hashSync(password, +process.env.Hash_Round);
     email,
     password:hashPass ,
     codeConfirmEmail:code ,
-  
-
 })
-
-
  res.status(200).json({message:" Done... PLZ Go To Confirm Your Email ",code})
-
 })
 
 
