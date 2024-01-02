@@ -5,7 +5,6 @@ import cors from 'cors'
 import { connectionBD } from "./DataBase/connectionDB.js"
 
 const app =  express()
-
 // middleware to parse the body of request into json format
 app.use(express.json())
 // middleware for cross-origin resource sharing (CORS)

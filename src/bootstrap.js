@@ -14,9 +14,6 @@ import orderRouter from "./modules/order/order.routes.js"
 import userRoutes from "./modules/user/user.routes.js"
 
 export const bootstrap = (app)=>{
-    app.get("/", (req, res) => {
-        res.send({message: 'Hello World!'})
-    })
     app.use('/api/v1/auth',authnRouter)
     app.use('/api/v1/brands', brandRouter)
     app.use('/api/v1/categories', categoryRouter)
@@ -29,6 +26,9 @@ export const bootstrap = (app)=>{
     app.use('/api/v1/cart', cartRouter)
     app.use('/api/v1/order', orderRouter)
     app.use('/api/v1/user', userRoutes)
+    app.get("/", (req, res) => {
+        res.send({message: 'Hello World!'})
+    })
     app.all('*', (req, res, next)=>{
         next(new AppError('Not found endpoint', 404))
     })
