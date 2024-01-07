@@ -2,7 +2,6 @@ import dotenv from "dotenv"
 import express from "express"
 import {bootstrap} from "./src/bootstrap.js"
 import cors from 'cors'
-import { connectionBD } from "./DataBase/connectionDB.js"
 
 const app =  express()
 // middleware to parse the body of request into json format
@@ -11,8 +10,7 @@ app.use(express.json())
 app.use(cors())
 // load environment variables
 dotenv.config()
-// connection to database
-connectionBD()
+
 // bootstrap application
 bootstrap(app)
 

@@ -12,11 +12,9 @@ import addressRouter from "./modules/address/address.routes.js"
 import cartRouter from "./modules/cart/cart.routes.js"
 import orderRouter from "./modules/order/order.routes.js"
 import userRoutes from "./modules/user/user.routes.js"
+import { connectionBD } from "../DataBase/connectionDB.js"
 
 export const bootstrap = (app)=>{
-    app.get("/", (req, res) => {
-        res.send({message: 'Hello World!'})
-    })
     app.use('/api/v1/auth',authnRouter)
     app.use('/api/v1/brands', brandRouter)
     app.use('/api/v1/categories', categoryRouter)
@@ -29,9 +27,17 @@ export const bootstrap = (app)=>{
     app.use('/api/v1/cart', cartRouter)
     app.use('/api/v1/order', orderRouter)
     app.use('/api/v1/user', userRoutes)
+    app.use("/", (req, res, next)=>{
+        res.send("welcome")
+    })
     app.all('*', (req, res, next)=>{
         next(new AppError('Not found endpoint', 404))
     })
+    // connection to database
+    connectionBD()
     // error middleware
     app.use(globalErrorMiddleware)
+    process.on('unhandledRejection', (err)=>{
+        console.log(`Unhandled Rejection at: Promise ${Promise}\nReason:\n${err}\n`)
+    })
 }
